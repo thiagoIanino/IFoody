@@ -13,17 +13,23 @@ namespace IFoody.Domain.Entities
             Email = email;
             Senha = senha;
         }
-        public Cliente(Guid id, string nome, string email)
+        public Cliente(Guid id, string nome, string email, string idStripe)
         {
             Id = id;
             Nome = nome;
             Email = email;
+            IdStripe = idStripe;
         }
 
         public Guid Id { get; set; }
+        public string IdStripe { get; set; }
         public string Nome { get; set; }
         public string Email { get; set; }
         public string Senha { get; set; }
     
+        public void AdicionarIdStripe(string id)
+        {
+            IdStripe = id;
+        }
     }
 }

@@ -53,7 +53,6 @@ namespace IFoody.Infrastructure.Repositories
                 if(parmsCount == IdsPratos.ToArray().Length)
                 {
                     valoresIn = string.Concat(valoresIn, $"@idPrato{parmsCount})");
-                    
                 }
                 else
                 {

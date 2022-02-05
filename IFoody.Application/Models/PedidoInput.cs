@@ -8,6 +8,7 @@ namespace IFoody.Application.Models
     {
         public Guid IdCliente { get; set; }
         public Guid IdCartao { get; set; }
+        public string Cvv { get; set; }
         public List<PratoPedidoInput> Pratos { get; set; }
     }
 }

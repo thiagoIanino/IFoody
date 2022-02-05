@@ -1,4 +1,5 @@
 using IFoody.CrossCutting.IoC;
+using IFoody.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -11,7 +12,9 @@ using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using static IFoody.Domain.Constantes.Contantes;
 
 namespace IFoody.Api
 {
@@ -49,6 +52,24 @@ namespace IFoody.Api
                 });
             });
             services.AddDependencyResolver();
+            services.AddCors(opts =>
+            {
+                opts.AddDefaultPolicy(builder =>
+                {
+                    builder.WithOrigins("http://localhost:3000")
+                    .AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowCredentials();
+                });
+            });
+
+            services.AddHttpClient(Pagamento.NOME_API_PAGAMENTO, config =>
+            {
+                config.BaseAddress = new Uri("http://localhost:44361");
+                config.DefaultRequestVersion = HttpVersion.Version20;
+                config.Timeout = TimeSpan.FromSeconds(30);
+            } 
+            );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -65,6 +86,8 @@ namespace IFoody.Api
 
             app.UseRouting();
 
+            app.UseCors();
+
             app.UseAuthorization();
 
             app.UseSwaggerUI(options =>
@@ -76,6 +99,7 @@ namespace IFoody.Api
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<NotificationService>("/webhook");
             });
         }
     }

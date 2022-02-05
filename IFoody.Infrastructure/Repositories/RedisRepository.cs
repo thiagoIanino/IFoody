@@ -16,7 +16,7 @@ namespace IFoody.Infrastructure.Repositories
             _cache = new Lazy<IDatabase>(() => connectionMultiplexer.Value.GetDatabase(1));
          }
         
-        public async Task SalvarObjetoAssincrono<T>(T valor, string chave, TimeSpan tempoExpiracao)
+        public async Task SalvarObjetoAssincrono<T>(T valor, string chave, TimeSpan? tempoExpiracao)
         {
             await _cache.Value.StringSetAsync(chave, JsonSerializer.Serialize(valor), tempoExpiracao);
         }

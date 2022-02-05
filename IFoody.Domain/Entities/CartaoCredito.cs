@@ -26,6 +26,7 @@ namespace IFoody.Domain.Entities
 
         public Guid IdCartao { get; set;}
         public Guid IdCliente { get; set;}
+        public string IdStripe { get; set;}
         public string Numero { get; set;}
         public string NumeroMascarado { get; set;}
         public DateTime Validade { get; set;}
@@ -38,6 +39,11 @@ namespace IFoody.Domain.Entities
             var mascara = new String('*', 12);
 
             return String.Concat(mascara, ultimosDigitos);
+        }
+
+        public void AdicionarIdCartaoStripe(string idCartao)
+        {
+            IdStripe = idCartao;
         }
 
     }

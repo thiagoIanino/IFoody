@@ -11,7 +11,7 @@ namespace IFoody.Infrastructure.Repositories
 {
     public class CartaoCreditoRepository : BaseRepository<CartaoCredito>, ICartaoCreditoRepository
     {
-        const string GRAVAR_CARTAO_EXECUTE = "insert into Cartao (idCliente,idCartao,numero,numeroMascarado,validade,nomeTitular,cpf) values (@idCliente,@idCartao,@numero,@numeroMascarado,@validade,@nomeTitular,@cpf)";
+        const string GRAVAR_CARTAO_EXECUTE = "insert into Cartao (idCliente,idCartao,numero,numeroMascarado,validade,nomeTitular,cpf,idStripe) values (@idCliente,@idCartao,@numero,@numeroMascarado,@validade,@nomeTitular,@cpf,@idStripe)";
         const string LISTAR_CARTOES_CLIENTE_QUERY = "select idCliente,idCartao,numeroMascarado from Cartao where idCliente = @idCliente";
 
         public CartaoCreditoRepository(IRedisRepository redisService) : base(redisService) { }
@@ -27,6 +27,7 @@ namespace IFoody.Infrastructure.Repositories
             parms.Add("@validade", cartao.Validade, DbType.DateTime);
             parms.Add("@nomeTitular", cartao.NomeTitular, DbType.AnsiString);
             parms.Add("@cpf", cartao.Cpf, DbType.AnsiString);
+            parms.Add("@idStripe", cartao.IdStripe, DbType.AnsiString);
 
             await ExecutarAsync(GRAVAR_CARTAO_EXECUTE, parms);
         }

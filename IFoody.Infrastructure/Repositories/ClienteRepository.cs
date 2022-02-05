@@ -4,17 +4,19 @@ using IFoody.Domain.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace IFoody.Infrastructure.Repositories
 {
-   public class ClienteRepository : BaseRepository<Cliente>, IClienteRepository
+   public class ClienteRepository : BaseServiceRepository<Cliente>, IClienteRepository
     {
-        public ClienteRepository(IRedisRepository redisService) : base(redisService) { }
+        public ClienteRepository(IHttpClientFactory httpClientFactory, IRedisRepository redisService) : base(httpClientFactory,redisService) { }
 
         const string AUTENTICAR_CLIENTE_QUERY = "Select id as id,nome as nome,email as email from Cliente where email = @email and senha = @senha";
-        const string GRAVAR_CLIENTE_EXECUTE = "Insert into Cliente(id,nome,email,senha) values (@id,@nome,@email,@senha)";
+        const string BUSCAR_CLIENTE_QUERY = "Select id as id,nome as nome,email as email, idStripe as idStripe from Cliente where id = @id";
+        const string GRAVAR_CLIENTE_EXECUTE = "Insert into Cliente(id,nome,email,senha,idStripe) values (@id,@nome,@email,@senha,@idStripe)";
         public async Task<Cliente> AutenticarCliente(string email, string senha)
         {
             DynamicParameters parametros = new DynamicParameters();
@@ -32,8 +34,18 @@ namespace IFoody.Infrastructure.Repositories
             parametros.Add("@nome", cliente.Nome, DbType.AnsiString);
             parametros.Add("@email", cliente.Email, DbType.AnsiString);
             parametros.Add("@senha", cliente.Senha, DbType.AnsiString);
+            parametros.Add("@idStripe", cliente.IdStripe, DbType.AnsiString);
 
             await  ExecutarAsync(GRAVAR_CLIENTE_EXECUTE, parametros);
+        }
+
+        public async Task<Cliente> BuscarCliente(Guid id)
+        {
+            DynamicParameters parametros = new DynamicParameters();
+            parametros.Add("@id", id, DbType.Guid);
+
+
+            return await ObterAsync<Cliente>(BUSCAR_CLIENTE_QUERY, parametros);
         }
     }
 }

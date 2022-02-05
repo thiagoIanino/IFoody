@@ -28,6 +28,7 @@ namespace IFoody.Domain.Entities.Restaurantes
         }
 
         public Guid Id { get; set; }
+        public string IdStripe { get; set; }
         public string NomeRestaurante { get; set;}
         public string NomeDonoRestaurante { get; set; }
         public string Tipo { get; set; }
@@ -36,5 +37,11 @@ namespace IFoody.Domain.Entities.Restaurantes
         public string Senha { get; set; }
         public double Nota { get; set; }
         public StatusAvaliacaoRestaurante Status { get; set; }
+
+
+        public void AdicionarIdStripe(string id)
+        {
+            IdStripe = id;
+        }
     }
 }

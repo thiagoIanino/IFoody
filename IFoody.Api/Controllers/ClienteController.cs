@@ -25,7 +25,7 @@ namespace IFoody.Api.Controllers
         }
 
         [HttpPost]
-        [Route("Autenticacao")]
+        [Route("autenticacao")]
         public async Task<IActionResult> AutenticarCliente(string email, string senha)
         {
             var cliente = await _clienteService.AutenticarCliente(email,senha);
@@ -33,8 +33,8 @@ namespace IFoody.Api.Controllers
         }
 
         [HttpPost]
-        [Route("Cartao")]
-        public async Task<IActionResult> CadastrarCartao(CartaoCreditoInput cartao)
+        [Route("cartao")]
+        public async Task<IActionResult> CadastrarCartao([FromBody]CartaoCreditoInput cartao)
         {
             await _clienteService.CadastrarCartaoCliente(cartao);
             return Ok("Cartao cadastrado com sucesso");

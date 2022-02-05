@@ -2,8 +2,10 @@
 using IFoody.Application.Mapping;
 using IFoody.Application.Models;
 using IFoody.Application.Models.Restaurantes;
+using IFoody.Domain.Dtos;
 using IFoody.Domain.Entities;
 using IFoody.Domain.Entities.Restaurantes;
+using IFoody.Domain.Enumeradores;
 using IFoody.Domain.Interfaces.Services;
 using IFoody.Domain.Repositories;
 using IFoody.Domain.Repositories.Restaurantes;
@@ -11,6 +13,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using System.Transactions;
 
 namespace IFoody.Application
 {
@@ -20,12 +23,14 @@ namespace IFoody.Application
         private readonly IDominioRestauranteService _dominioRestauranteService;
         private readonly IAvaliacaoRepository _avaliacaoService;
         private readonly IStatusAvaliacaoRepository _statusAvaliacaoService;
-        public RestauranteApplication(IRestauranteRepository restauranteService, IDominioRestauranteService dominioRestauranteService, IAvaliacaoRepository avaliacaoService, IStatusAvaliacaoRepository statusAvaliacaoService)
+        private readonly IPagamentoRepository _pagamentoService;
+        public RestauranteApplication(IRestauranteRepository restauranteService, IDominioRestauranteService dominioRestauranteService, IAvaliacaoRepository avaliacaoService, IStatusAvaliacaoRepository statusAvaliacaoService, IPagamentoRepository pagamentoService)
         {
             _restauranteService = restauranteService;
             _dominioRestauranteService = dominioRestauranteService;
             _avaliacaoService = avaliacaoService;
             _statusAvaliacaoService = statusAvaliacaoService;
+            _pagamentoService = pagamentoService;
         }
 
         public async Task CadastrarRestaurante(RestauranteInput restauranteInput)
@@ -39,16 +44,41 @@ namespace IFoody.Application
                 restauranteInput.Senha);
             _dominioRestauranteService.ValidarDadosCadastroRestaurante(restaurante);
 
+            var usuarioStripe = new UsuarioStripeDto(
+                restaurante.NomeRestaurante,
+                restaurante.Email,
+                CategoriaStripe.Restaurante);
+
+            var idStripeRestaurante = await _pagamentoService.CadastrarUsuarioStripe(usuarioStripe);
+            restaurante.AdicionarIdStripe(idStripeRestaurante);
+
             var avaliacaoPadrao = new Avaliacao(restaurante.Id);
             var statusAvaliacaoRestaurante = new StatusAvaliacao(restaurante.Id);
 
-
-            await _restauranteService.GravarRestaurante(restaurante);
-            await _avaliacaoService.RegistrarInicioRestauranteAvaliacao(avaliacaoPadrao);
-            await _statusAvaliacaoService.GravarStatusAvaliacaoRestaurante(statusAvaliacaoRestaurante);
+            await RegistrarRestaurante(restaurante, avaliacaoPadrao, statusAvaliacaoRestaurante);
         }
 
-        public async Task AutenticarRestaurante(string email, string senha)
+        private async Task RegistrarRestaurante(Restaurante restaurante,Avaliacao avaliacao,StatusAvaliacao statusAvaliacao)
+        {
+            try
+            {
+                using (var transacao = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled))
+                {
+                    await _restauranteService.GravarRestaurante(restaurante);
+                    await _avaliacaoService.RegistrarInicioRestauranteAvaliacao(avaliacao);
+                    await _statusAvaliacaoService.GravarStatusAvaliacaoRestaurante(statusAvaliacao);
+
+                    // transacao.Dispose();
+                    transacao.Complete();
+                }
+
+            }catch(TransactionAbortedException ex)
+            {
+                throw new Exception("Erro ao na criacao de registros no banco",ex);
+            }
+        }
+
+            public async Task AutenticarRestaurante(string email, string senha)
         {
             _dominioRestauranteService.ValidarDadosAutenticacao(email, senha);
             var situacaoAutenticacaoCliente = await _restauranteService.AutenticarRestaurante(email, senha);

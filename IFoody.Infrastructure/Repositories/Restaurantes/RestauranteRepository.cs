@@ -1,4 +1,5 @@
 ﻿using Dapper;
+using IFoody.Domain.Dtos;
 using IFoody.Domain.Entities;
 using IFoody.Domain.Entities.Restaurantes;
 using IFoody.Domain.Repositories;
@@ -6,18 +7,19 @@ using IFoody.Domain.Repositories.Restaurantes;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace IFoody.Infrastructure.Repositories.Restaurantes
 {
-    public class RestauranteRepository : BaseRepository<Restaurante>, IRestauranteRepository
+    public class RestauranteRepository : BaseServiceRepository<Restaurante>, IRestauranteRepository
     {
 
-        public RestauranteRepository(IRedisRepository redisService) : base(redisService) { }
+        public RestauranteRepository(IHttpClientFactory httpClientFactory,IRedisRepository redisService) : base(httpClientFactory,redisService) { }
 
 
-        const string GRAVAR_RESTAURANTE_EXECUTE = "insert into Restaurante(id,nomeRestaurante,nomeDonoRestaurante,cnpj,email,senha,tipo) values(@id,@nomeRestaurante,@nomeDonoRestaurante,@cnpj,@email,@senha,@tipo)";
+        const string GRAVAR_RESTAURANTE_EXECUTE = "insert into Restaurante(id,nomeRestaurante,nomeDonoRestaurante,cnpj,email,senha,tipo,idStripe) values(@id,@nomeRestaurante,@nomeDonoRestaurante,@cnpj,@email,@senha,@tipo,@idStripe)";
         const string AUTENTICAR_RESTAURANTE_QUERY = "select Count(id) from Restaurante where email = @email and senha = @senha";
 
         const string LISTAR_RESTAURANTES_POR_TIPO_QUERY = @"select
@@ -72,6 +74,7 @@ namespace IFoody.Infrastructure.Repositories.Restaurantes
             parms.Add("@email", restaurante.Email, DbType.AnsiString);
             parms.Add("@senha", restaurante.Senha, DbType.AnsiString);
             parms.Add("@tipo", restaurante.Tipo, DbType.AnsiString);
+            parms.Add("@idStripe", restaurante.IdStripe, DbType.AnsiString);
 
             await ExecutarAsync(GRAVAR_RESTAURANTE_EXECUTE, parms);
         }

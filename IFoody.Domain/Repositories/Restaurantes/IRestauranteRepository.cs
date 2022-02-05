@@ -1,4 +1,5 @@
-﻿using IFoody.Domain.Entities;
+﻿using IFoody.Domain.Dtos;
+using IFoody.Domain.Entities;
 using IFoody.Domain.Entities.Restaurantes;
 using System;
 using System.Collections.Generic;

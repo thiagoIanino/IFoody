@@ -1,15 +1,26 @@
 ﻿using IFoody.Domain.Core.Services;
+using IFoody.Domain.Dtos;
 using IFoody.Domain.Entities;
 using IFoody.Domain.Enumeradores.Cliente;
 using IFoody.Domain.Interfaces.Services;
+using IFoody.Domain.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace IFoody.Domain.Services
 {
    public class DominioClienteService : DomainService, IDominioClienteService
     {
+        private readonly IClienteRepository _clienteService;
+        private readonly IPagamentoRepository _pagamentoService;
+        public DominioClienteService(IClienteRepository clienteService, IPagamentoRepository pagamentoService)
+        {
+            _clienteService = clienteService;
+            _pagamentoService = pagamentoService;
+        }
+
         public void ValidarDadosCadastroCliente(Cliente cliente)
         {
             if (string.IsNullOrWhiteSpace(cliente.Nome))
@@ -54,6 +65,23 @@ namespace IFoody.Domain.Services
             {
                 throw new Exception("O campo Senha não pode ser vazio");
             }
+        }
+
+        public Task<Cliente> BuscarCliente(Guid id)
+        {
+            var cliente = _clienteService.BuscarCliente(id);
+
+            if(cliente is null)
+            {
+                throw new Exception("Cliente não existe");
+            }
+            return cliente;
+        }
+
+        public async Task<string> CadastrarCartaoStripe(CartaoCredito cartao, Cliente cliente)
+        {
+            var cartaoStripe = new CartaoStripeDto(cliente.IdStripe,cartao.Numero,cartao.Validade,cartao.NomeTitular,cartao.Cpf);
+            return await _pagamentoService.CadastrarCartaoStripe(cartaoStripe);
         }
     }
 }

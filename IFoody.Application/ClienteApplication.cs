@@ -1,7 +1,9 @@
 ﻿using IFoody.Application.Interfaces;
 using IFoody.Application.Mapping;
 using IFoody.Application.Models;
+using IFoody.Domain.Dtos;
 using IFoody.Domain.Entities;
+using IFoody.Domain.Enumeradores;
 using IFoody.Domain.Enumeradores.Cliente;
 using IFoody.Domain.Interfaces.Services;
 using IFoody.Domain.Repositories;
@@ -17,14 +19,17 @@ namespace IFoody.Application
         private readonly IDominioClienteService _dominioClienteService;
         private readonly IClienteRepository _clienteService;
         private readonly ICartaoCreditoRepository _cartaoCreditoService;
+        private readonly IPagamentoRepository _pagamentoService;
         public ClienteApplication(
             IDominioClienteService dominioClienteService,
             IClienteRepository clienteService,
-            ICartaoCreditoRepository cartaoCreditoService)
+            ICartaoCreditoRepository cartaoCreditoService,
+            IPagamentoRepository pagamentoService)
         {
             _dominioClienteService = dominioClienteService;
             _clienteService = clienteService;
             _cartaoCreditoService = cartaoCreditoService;
+            _pagamentoService = pagamentoService;
         }
 
         public async Task CadastrarCliente(ClienteInput clienteInput)
@@ -36,6 +41,15 @@ namespace IFoody.Application
                 );
 
             _dominioClienteService.ValidarDadosCadastroCliente(cliente);
+
+            var usuarioStripe = new UsuarioStripeDto(
+              cliente.Nome,
+              cliente.Email,
+              CategoriaStripe.Cliente);
+
+            var idStripe = await _pagamentoService.CadastrarUsuarioStripe(usuarioStripe);
+            cliente.AdicionarIdStripe(idStripe);
+
             await _clienteService.GravarCliente(cliente);
         }
 
@@ -69,6 +83,12 @@ namespace IFoody.Application
                 );
 
             _dominioClienteService.ValidarDadosCartaoCliente(cartao);
+
+            var cliente = await _dominioClienteService.BuscarCliente(cartaoInput.IdCliente);
+
+            var idCartaoStripe = await _dominioClienteService.CadastrarCartaoStripe(cartao, cliente);
+
+            cartao.AdicionarIdCartaoStripe(idCartaoStripe);
 
             await _cartaoCreditoService.CadastrarCartao(cartao);
         }

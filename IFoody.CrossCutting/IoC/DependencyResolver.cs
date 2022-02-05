@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using IFoody.Domain.Dtos;
+using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,8 @@ namespace IFoody.CrossCutting.IoC
             services.AddDependencyResolverRepository();
             services.AddDependencyResolverService();
             services.AddDependencyResolverRedis();
+            services.AddSignalR();
+            services.AddSingleton<IDictionary<string, UserConnection>>(opts => new Dictionary<string, UserConnection>());
         }
     }
 }

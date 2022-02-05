@@ -3,6 +3,7 @@ using IFoody.Domain.Enumeradores.Cliente;
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace IFoody.Domain.Interfaces.Services
 {
@@ -12,5 +13,7 @@ namespace IFoody.Domain.Interfaces.Services
        void ValidarDadosAutenticacao(string email, string senha);
         void VerificarSeClienteEstaAutenticado(Cliente cliente);
         void ValidarDadosCartaoCliente(CartaoCredito cartao);
+        Task<Cliente> BuscarCliente(Guid id);
+        Task<string> CadastrarCartaoStripe(CartaoCredito cartao, Cliente cliente);
     }
 }

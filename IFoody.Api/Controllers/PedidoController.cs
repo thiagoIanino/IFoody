@@ -21,5 +21,21 @@ namespace IFoody.Api.Controllers
             await _pedidoService.CadastrarPedido(pedido);
             return Ok();
         }
+        [Route("pagamento/confirmar")]
+        [HttpPost]
+        public async Task<IActionResult> ConfirmarPagamento([FromBody]ConfirmacaoPagamentoDto confirmacaoPagamento)
+        {
+            await _pedidoService.ConfirmarPagamento(confirmacaoPagamento);
+            return Ok();
+        }
+
+        [Route("atualizar")]
+        [HttpPost]
+        public async Task<IActionResult> AtualizarStatus([FromBody] AtualizacaoPedidoDto confirmacaoPagamento)
+        {
+            await _pedidoService.AtualizarPedido(confirmacaoPagamento);
+            return Ok();
+        }
+
     }
 }
