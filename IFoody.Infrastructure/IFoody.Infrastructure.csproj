@@ -24,4 +24,8 @@
     <ProjectReference Include="..\IFoody.Domain\IFoody.Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Configs\" />
+  </ItemGroup>
+
 </Project>
