@@ -11,5 +11,6 @@ namespace IFoody.Application.Interfaces
     {
         Task CadastrarPrato(PratoInput pratoInput);
         Task<IEnumerable<Prato>> ListarPratosPorRestaurante(Guid idRestaurante);
+        Task DeletarPrato(Guid idPrato);
     }
 }

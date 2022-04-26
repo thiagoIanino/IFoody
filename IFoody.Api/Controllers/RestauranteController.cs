@@ -1,6 +1,7 @@
 ﻿using IFoody.Application.Interfaces;
 using IFoody.Application.Models;
 using IFoody.Application.Models.Restaurantes;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,7 @@ namespace IFoody.Api.Controllers
 
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> CadastrarRestaurante([FromBody] RestauranteInput restauranteInput)
         {
             await _restauranteService.CadastrarRestaurante(restauranteInput);
@@ -27,7 +29,8 @@ namespace IFoody.Api.Controllers
         }
 
         [HttpGet]
-        [Route("tipo")]
+        [Route("tipo/{tipo}")]
+        [AllowAnonymous]
         public async Task<IActionResult> ListarRestaurantesPorTipo(string tipo)
         {
             var restaurantes = await _restauranteService.ListarRestaurantesPorTipo(tipo);
@@ -35,6 +38,7 @@ namespace IFoody.Api.Controllers
         }
         [HttpGet]
         [Route("classificacao")]
+        [AllowAnonymous]
         public async Task<IActionResult> ListarRestaurantesPorClassificacao()
         {
             var restaurantes = await _restauranteService.ListarRestaurantesPorClassificacao();
@@ -42,19 +46,30 @@ namespace IFoody.Api.Controllers
         }
 
         [HttpPost]
-        [Route("Autenticacao")]
-        public async Task<IActionResult> AutenticarCliente(string email, string senha)
+        [Route("login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> AutenticarRestaurante([FromBody] AutenticacaoInput autenticacaoInput)
         {
-            await _restauranteService.AutenticarRestaurante(email, senha);
-            return Ok("Cliente autenticado com sucesso");
+            var restaurante = await _restauranteService.AutenticarRestaurante(autenticacaoInput.Email, autenticacaoInput.Senha);
+            return Ok(restaurante);
         }
 
         [HttpPost]
-        [Route("Avaliacao")]
-        public async Task<IActionResult> AvaliarRestaurante(AvaliacaoInput avaliacaoInput)
+        [Route("avaliacao")]
+        [Authorize(Roles = "cliente")]
+        public async Task<IActionResult> AvaliarRestaurante([FromBody]AvaliacaoInput avaliacaoInput)
         {
             await _restauranteService.AvaliarRestaurante(avaliacaoInput);
             return Ok();
+        }
+
+        [HttpGet]
+        [Route("{idRestaurante}")]
+        [AllowAnonymous]
+        public async Task<IActionResult> ObterRestaurnte(Guid idRestaurante)
+        {
+            var restaurante = await _restauranteService.ObterRestaurante(idRestaurante);
+            return Ok(restaurante);
         }
     }
 }

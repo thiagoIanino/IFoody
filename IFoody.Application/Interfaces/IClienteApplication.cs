@@ -1,4 +1,5 @@
 ﻿using IFoody.Application.Models;
+using IFoody.Domain.Entities;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -10,6 +11,9 @@ namespace IFoody.Application.Interfaces
     {
         Task CadastrarCliente(ClienteInput clienteInput);
         Task<ClienteDto> AutenticarCliente(string email, string senha);
-        Task CadastrarCartaoCliente(CartaoCreditoInput cartaoInput);
+        Task<CartaoCreditoDto> CadastrarCartaoCliente(CartaoCreditoInput cartaoInput);
+        Task<EnderecoCliente> CadastrarEndereco(EnderecoInput endereco);
+        Task<IEnumerable<EnderecoCliente>> ListarEnderecosCliente();
+        Task<IEnumerable<CartaoCreditoDto>> ListarCartoesCliente();
     }
 }

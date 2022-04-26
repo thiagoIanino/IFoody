@@ -1,4 +1,5 @@
-﻿using IFoody.Domain.Entities;
+﻿using IFoody.Domain.Dtos;
+using IFoody.Domain.Entities;
 using IFoody.Domain.Entities.Restaurantes;
 using System;
 using System.Collections.Generic;
@@ -11,9 +12,9 @@ namespace IFoody.Domain.Interfaces.Services
     {
        void ValidarDadosCadastroRestaurante(Restaurante restaurante);
         void ValidarDadosAutenticacao(string email, string senha);
-        void VerificarSeRestauranteEstaAutenticado(int situacaoAutenticacao);
+        string AutenticarRestaurante(Restaurante restaurante);
         void ValidarDadosAvaliacaoRestaurante(Avaliacao avaliacao);
         void ValidarTipoRestaurante(string tipo);
-        void ValidarRestornoListaRestaurantes(IEnumerable<Restaurante> listaRestaurantes);
+        void ValidarRestornoListaRestaurantes(IEnumerable<RestauranteDto> listaRestaurantes);
     }
 }

@@ -24,6 +24,9 @@ namespace IFoody.CrossCutting.IoC
             services.AddScoped<ICartaoCreditoRepository, CartaoCreditoRepository>();
             services.AddScoped<IPagamentoRepository, PagamentoRepository>();
             services.AddScoped<IWebRepository, WebRepository>();
+            services.AddScoped<ITokenRepository, TokenRepository>();
+            services.AddScoped<IContextoRepository, ContextoRepository>();
+            services.AddScoped<IEnderecoRepository, EnderecoRepository>();
 
         }
     }

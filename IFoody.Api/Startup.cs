@@ -1,5 +1,6 @@
 using IFoody.CrossCutting.IoC;
 using IFoody.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -8,11 +9,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Threading.Tasks;
 using static IFoody.Domain.Constantes.Contantes;
 
@@ -50,17 +53,58 @@ namespace IFoody.Api
                         Url = new Uri("https://example.com/license")
                     }
                 });
+                options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                });
+                options.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                          new OpenApiSecurityScheme
+                          {
+                              Reference = new OpenApiReference
+                              {
+                                  Type = ReferenceType.SecurityScheme,
+                                  Id = "Bearer"
+                              }
+                          },
+                         new string[] {}
+                    }
+                });
             });
             services.AddDependencyResolver();
-            services.AddCors(opts =>
+            services.AddCors(options =>
             {
-                opts.AddDefaultPolicy(builder =>
+                options.AddDefaultPolicy(
+                    builder =>
+                    {
+                        builder.WithOrigins("http://localhost:3000")
+                .AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+                    });
+            });
+
+
+            var key = Encoding.ASCII.GetBytes(Environment.GetEnvironmentVariable("SECRET_JWT"));
+            services.AddAuthentication(x =>
+            {
+                x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            }).AddJwtBearer(x =>
+            {
+                x.RequireHttpsMetadata = false;
+                x.SaveToken = true;
+                x.TokenValidationParameters = new TokenValidationParameters
                 {
-                    builder.WithOrigins("http://localhost:3000")
-                    .AllowAnyHeader()
-                    .AllowAnyMethod()
-                    .AllowCredentials();
-                });
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = false,
+                    ValidateAudience = false
+                };
+
             });
 
             services.AddHttpClient(Pagamento.NOME_API_PAGAMENTO, config =>
@@ -70,6 +114,12 @@ namespace IFoody.Api
                 config.Timeout = TimeSpan.FromSeconds(30);
             } 
             );
+
+            services.AddSignalR(hubOptions =>
+            {
+                hubOptions.EnableDetailedErrors = true;
+                hubOptions.MaximumReceiveMessageSize = 102400000;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -88,6 +138,8 @@ namespace IFoody.Api
 
             app.UseCors();
 
+
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseSwaggerUI(options =>
@@ -95,6 +147,7 @@ namespace IFoody.Api
                 options.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
                 options.RoutePrefix = string.Empty;
             });
+
 
             app.UseEndpoints(endpoints =>
             {

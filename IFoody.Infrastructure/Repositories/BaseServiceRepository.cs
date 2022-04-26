@@ -18,6 +18,7 @@ namespace IFoody.Infrastructure.Repositories
         public BaseServiceRepository(IHttpClientFactory httpClientFactory, IRedisRepository redisService) : base(redisService)
         {
             _httpClientFactory = httpClientFactory;
+
         }
 
         protected async Task<HttpResponseMessage> Get(string nomeUrlBase, string requestUrl, Dictionary<string, string> headers, int? timeOut)

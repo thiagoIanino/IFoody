@@ -6,7 +6,7 @@ namespace IFoody.Domain.Entities
 {
     public class CartaoCredito
     {
-        public CartaoCredito(Guid idCliente,string numero,DateTime validade, string nomeTitular,string cpf)
+        public CartaoCredito(Guid idCliente,string numero,DateTime validade, string nomeTitular,string cpf,string bandeira, string cvv)
         {
             IdCartao = Guid.NewGuid();
             IdCliente = idCliente;
@@ -15,13 +15,16 @@ namespace IFoody.Domain.Entities
             Validade = validade;
             NomeTitular = nomeTitular;
             Cpf = cpf;
+            Bandeira = bandeira;
+            Cvv = cvv;
         }
 
-        public CartaoCredito(Guid idCliente,Guid idCartao, string numeroMascarado)
+        public CartaoCredito(Guid idCliente,Guid idCartao, string numeroMascarado,string bandeira)
         {
             IdCartao = idCartao;
             IdCliente = idCliente;
             NumeroMascarado = numeroMascarado;
+            Bandeira = bandeira;
         }
 
         public Guid IdCartao { get; set;}
@@ -32,6 +35,8 @@ namespace IFoody.Domain.Entities
         public DateTime Validade { get; set;}
         public string NomeTitular  { get; set;}
         public string Cpf { get; set;}
+        public string Bandeira { get; set;}
+        public string Cvv { get; set;}
 
         public string MascararNumeroCartao()
         {

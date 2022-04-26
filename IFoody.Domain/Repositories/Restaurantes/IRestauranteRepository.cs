@@ -11,9 +11,11 @@ namespace IFoody.Domain.Repositories.Restaurantes
     public interface IRestauranteRepository
     {
         Task GravarRestaurante(Restaurante restaurante);
-        Task<int> AutenticarRestaurante(string email, string senha);
-        Task<IEnumerable<Restaurante>> ListarRestaurantesPorTipo(string tipo);
-        Task<IEnumerable<Restaurante>> ListarRestaurantesPorClassificacao();
-        Task<IEnumerable<Restaurante>> ListarRestaurantesPorClassificacaoConsiderandoCache();
+        Task<Restaurante> ObterClientePorEmailESenha(string email, string senha);
+        Task<IEnumerable<RestauranteDto>> ListarRestaurantesPorTipo(string tipo);
+        Task<IEnumerable<RestauranteDto>> ListarRestaurantesPorClassificacaoConsiderandoCache();
+        Task<RestauranteDto> ObterRestaurante(Guid id);
+        Task<IEnumerable<RestauranteDto>> ListarRestaurantesNovos();
+        Task<List<RestaurantePedidoDto>> ListarDadosPedidoRestaurantes(List<Guid> idsRestaurantes);
     }
 }

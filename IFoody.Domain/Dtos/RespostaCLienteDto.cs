@@ -7,7 +7,7 @@ namespace IFoody.Domain.Dtos
 {
     public class RespostaCLienteDto
     {
-        public Guid IdPedido { get; set; }
+        public List<PedidoClienteDto> Pedidos { get; set; }
         public StatusPedido StatusPedido {get ; set;}
     }
 }

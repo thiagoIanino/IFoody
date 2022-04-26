@@ -11,5 +11,6 @@ namespace IFoody.Domain.Repositories
         Task GravarPrato(Prato prato);
         Task<IEnumerable<Prato>> ListarPratosRestaurante(Guid idRestaurante);
         Task<IEnumerable<Prato>> ListarPratosPedido(List<Guid> IdsPratos);
+        Task DeletarPrato(Guid idPrato);
     }
 }

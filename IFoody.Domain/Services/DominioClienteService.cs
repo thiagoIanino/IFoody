@@ -15,10 +15,14 @@ namespace IFoody.Domain.Services
     {
         private readonly IClienteRepository _clienteService;
         private readonly IPagamentoRepository _pagamentoService;
-        public DominioClienteService(IClienteRepository clienteService, IPagamentoRepository pagamentoService)
+        private readonly ITokenRepository _tokenRepository;
+        public DominioClienteService(IClienteRepository clienteService,
+            IPagamentoRepository pagamentoService,
+            ITokenRepository tokenRepository)
         {
             _clienteService = clienteService;
             _pagamentoService = pagamentoService;
+            _tokenRepository = tokenRepository;
         }
 
         public void ValidarDadosCadastroCliente(Cliente cliente)
@@ -36,12 +40,14 @@ namespace IFoody.Domain.Services
             } 
         }
 
-        public void VerificarSeClienteEstaAutenticado(Cliente cliente) 
+        public string AutenticarCliente(Cliente cliente) 
         {
             if(cliente is null)
             {
                 throw new Exception("Email ou senha incorretos");
             }
+            return _tokenRepository.GenerateToken(cliente.Role,cliente.Email,cliente.Id);
+
         }
 
         public void ValidarDadosCartaoCliente(CartaoCredito cartao)
@@ -67,7 +73,50 @@ namespace IFoody.Domain.Services
             }
         }
 
-        public Task<Cliente> BuscarCliente(Guid id)
+        public EnderecoCliente FormatarEnderecoCliente(Guid idCliente, string rua, double? numero, double? apto, string bairro, string cidade, string estado)
+        {
+            if (idCliente == Guid.Empty)
+            {
+                throw new Exception("O Id do cliente não pode ser vazio");
+            }
+            if (string.IsNullOrWhiteSpace(rua))
+            {
+                throw new Exception("O campo rua não pode ser vazio");
+            }
+            if (numero is null)
+            {
+                throw new Exception("O campo numero não pode ser vazio");
+            }
+
+            if (string.IsNullOrWhiteSpace(bairro))
+            {
+                throw new Exception("O campo bairro não pode ser vazio");
+            }
+            if (string.IsNullOrWhiteSpace(cidade))
+            {
+                throw new Exception("O campo cidade não pode ser vazio");
+            }
+            if (string.IsNullOrWhiteSpace(estado))
+            {
+                throw new Exception("O campo estado não pode ser vazio");
+            }
+
+            string aptoForamatado = "";
+            if (apto != null)
+                aptoForamatado = string.Concat(" apto " + apto);
+            var linha1Endereco = string.Concat(rua + " " + numero + aptoForamatado);
+            var linha2Endereco = string.Concat(" Bairro " + bairro + "," + cidade + "," + estado);
+
+            return new EnderecoCliente
+            (
+                 Guid.NewGuid(),
+                idCliente,
+                linha1Endereco,
+                linha2Endereco
+            );
+        }
+
+            public Task<Cliente> BuscarCliente(Guid id)
         {
             var cliente = _clienteService.BuscarCliente(id);
 

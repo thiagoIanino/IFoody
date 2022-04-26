@@ -1,4 +1,5 @@
 ﻿using IFoody.Domain.Dtos;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using StackExchange.Redis;
 using System;
@@ -17,7 +18,7 @@ namespace IFoody.CrossCutting.IoC
             services.AddDependencyResolverService();
             services.AddDependencyResolverRedis();
             services.AddSignalR();
-            services.AddSingleton<IDictionary<string, UserConnection>>(opts => new Dictionary<string, UserConnection>());
+            services.AddSingleton< IHttpContextAccessor, HttpContextAccessor>();
         }
     }
 }

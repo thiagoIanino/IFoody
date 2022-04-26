@@ -36,11 +36,10 @@ namespace IFoody.Infrastructure.Repositories
                 return Task.CompletedTask;
         }
 
-        public Task EnviarRespostaCliente( Guid idUsuario, RespostaCLienteDto respostaCliente)
+        public Task EnviarRespostaCliente( Guid idUsuario, PedidoProcessado? pedidosCliente)
         {
 
-            _hubContext.Clients.Group(idUsuario.ToString()).SendAsync("ReceiveMessage", respostaCliente);
-            //_hubContext.Clients.Client(notification).SendAsync("ReceiveMessage2", "f", "eu sou");
+            _hubContext.Clients.Group(idUsuario.ToString()).SendAsync("ReceiveMessage", pedidosCliente);
             return Task.CompletedTask;
         }
 

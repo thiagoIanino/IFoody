@@ -11,6 +11,5 @@ namespace IFoody.Domain.Dtos
         public List<Pedido> Pedidos { get; set; }
         public Guid IdUsuario { get; set; }
         public Guid IdCartao { get; set; }
-        public string Cvv { get; set; }
     }
 }

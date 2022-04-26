@@ -13,9 +13,10 @@ namespace IFoody.Infrastructure.Repositories
     {
         public PratoRespository(IRedisRepository redisService) : base(redisService) { }
 
-        const string GRAVAR_PRATO_EXECUTE = "insert into Prato(id,nomePrato,descricao,urlImagem,valor, idRestaurante) values(@id,@nomePrato,@descricao,@urlImagem,@valor,@idRestaurante)";
-        const string LISTAR_PRATOS_RESTAURANTE = "select p.id as id,p.nomePrato as nomePrato,p.descricao as descricao,p.urlImagem as urlImagem,p.valor as valor,p.idRestaurante as idRestaurante from Prato p join Restaurante r on p.idRestaurante = r.id where r.id = @idRestaurante";
-        const string LISTAR_PRATOS_PARA_PEDIDO = "select p.id as id,p.nomePrato as nomePrato,p.descricao as descricao,p.urlImagem as urlImagem,p.valor as valor,p.idRestaurante as idRestaurante from Prato p where id in (";
+        const string GRAVAR_PRATO_EXECUTE = "insert into Prato(id,nomePrato,descricao,urlImagem,valor, idRestaurante,classificacao) values(@id,@nomePrato,@descricao,@urlImagem,@valor,@idRestaurante,@classificacao)";
+        const string DELETAR_PRATO_EXECUTE = "Delete from Prato where id = @id";
+        const string LISTAR_PRATOS_RESTAURANTE = "select p.id as id,p.nomePrato as nomePrato,p.descricao as descricao,p.urlImagem as urlImagem,p.valor as valor,p.idRestaurante as idRestaurante,p.classificacao as classificacao from Prato p join Restaurante r on p.idRestaurante = r.id where r.id = @idRestaurante";
+        const string LISTAR_PRATOS_PARA_PEDIDO = "select p.id as id,p.nomePrato as nomePrato,p.descricao as descricao,p.urlImagem as urlImagem,p.valor as valor,p.idRestaurante as idRestaurante,p.classificacao as classificacao from Prato p where id in (";
      
         public async Task GravarPrato(Prato prato)
         {
@@ -26,8 +27,19 @@ namespace IFoody.Infrastructure.Repositories
             parms.Add("@urlImagem", prato.UrlImagem, DbType.AnsiString);
             parms.Add("@valor", prato.Valor, DbType.Double);
             parms.Add("@idRestaurante", prato.IdRestaurante, DbType.Guid);
+            parms.Add("@classificacao", prato.Classificacao, DbType.Int16);
 
             await ExecutarAsync(GRAVAR_PRATO_EXECUTE, parms);
+
+        }
+
+        public async Task DeletarPrato(Guid idPrato)
+        {
+            DynamicParameters parms = new DynamicParameters();
+            parms.Add("@id", idPrato, DbType.Guid);
+
+
+            await ExecutarAsync(DELETAR_PRATO_EXECUTE, parms);
 
         }
 

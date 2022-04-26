@@ -1,5 +1,6 @@
 ﻿using IFoody.Application.Models;
 using IFoody.Application.Models.Restaurantes;
+using IFoody.Domain.Dtos;
 using IFoody.Domain.Entities;
 using IFoody.Domain.Entities.Restaurantes;
 using System;
@@ -12,9 +13,10 @@ namespace IFoody.Application.Interfaces
     public interface IRestauranteApplication
     {
         Task CadastrarRestaurante(RestauranteInput restaurante);
-        Task AutenticarRestaurante(string email,string senha);
+        Task<RestauranteAutenticacaoOutput> AutenticarRestaurante(string email,string senha);
         Task AvaliarRestaurante(AvaliacaoInput avaliacaoInput);
-        Task<IEnumerable<RestauranteModel>> ListarRestaurantesPorTipo(string tipo);
-        Task<IEnumerable<RestauranteModel>> ListarRestaurantesPorClassificacao();
+        Task<IEnumerable<RestauranteDto>> ListarRestaurantesPorTipo(string tipo);
+        Task<IEnumerable<RestauranteDto>> ListarRestaurantesPorClassificacao();
+        Task<RestauranteOutput> ObterRestaurante(Guid idRestaurante);
     }
 }

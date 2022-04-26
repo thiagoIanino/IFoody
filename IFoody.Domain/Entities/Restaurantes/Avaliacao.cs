@@ -26,6 +26,10 @@ namespace IFoody.Domain.Entities.Restaurantes
             IdRestaurante = idRestaurante;
 
         }
+        public Avaliacao()
+        {
+
+        }
 
         public Guid Id { get; set; }
         public int? Nota { get; set; }

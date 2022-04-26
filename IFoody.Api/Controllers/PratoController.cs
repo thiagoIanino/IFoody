@@ -1,6 +1,7 @@
 ﻿using IFoody.Application.Interfaces;
 using IFoody.Application.Models;
 using IFoody.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -19,14 +20,24 @@ namespace IFoody.Api.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "restaurante")]
         public async Task<IActionResult> CadastrarPrato([FromBody]PratoInput pratoInput)
         {
             await _pratoservice.CadastrarPrato(pratoInput);
+            return Ok("Prato cadastrado com sucesso");
+        } 
+        [Route("{idPrato}")]
+        [HttpDelete]
+        [Authorize(Roles = "restaurante")]
+        public async Task<IActionResult> CadastrarPrato(Guid idPrato)
+        {
+            await _pratoservice.DeletarPrato(idPrato);
             return Ok("Prato cadastrado com sucesso");
         }
 
         [HttpGet]
         [Route("{idRestaurante}")]
+        [AllowAnonymous]
         public async Task<IActionResult> ListarPratosPorRestaurante(Guid idRestaurante)
         {
             var pratos = await _pratoservice.ListarPratosPorRestaurante(idRestaurante);

@@ -14,17 +14,17 @@ namespace IFoody.Infrastructure.Repositories
     {
         public ClienteRepository(IHttpClientFactory httpClientFactory, IRedisRepository redisService) : base(httpClientFactory,redisService) { }
 
-        const string AUTENTICAR_CLIENTE_QUERY = "Select id as id,nome as nome,email as email from Cliente where email = @email and senha = @senha";
-        const string BUSCAR_CLIENTE_QUERY = "Select id as id,nome as nome,email as email, idStripe as idStripe from Cliente where id = @id";
+        const string BUSCAR_CLIENTE_POR_EMAIL_E_SENHA_QUERY = "Select c.id as id,c.nome as nome,c.email as email,c.idStripe as idStripe,c.role as role from Cliente c where email = @email and senha = @senha";
+        const string BUSCAR_CLIENTE_QUERY = "Select id as id,nome as nome,email as email, idStripe as idStripe, role as role from Cliente where id = @id";
         const string GRAVAR_CLIENTE_EXECUTE = "Insert into Cliente(id,nome,email,senha,idStripe) values (@id,@nome,@email,@senha,@idStripe)";
-        public async Task<Cliente> AutenticarCliente(string email, string senha)
+        public async Task<Cliente> ObterClientePorEmailESenha(string email, string senha)
         {
             DynamicParameters parametros = new DynamicParameters();
             // ansiString == varchar / ansiStringfixedLength == char
             parametros.Add("@email", email, DbType.AnsiString);
             parametros.Add("@senha", senha, DbType.AnsiString);
 
-           return await ObterAsync<Cliente>(AUTENTICAR_CLIENTE_QUERY, parametros);
+           return await ObterAsync<Cliente>(BUSCAR_CLIENTE_POR_EMAIL_E_SENHA_QUERY, parametros);
         }
 
         public async Task GravarCliente(Cliente cliente)

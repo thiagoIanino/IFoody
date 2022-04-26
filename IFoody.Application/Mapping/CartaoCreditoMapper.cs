@@ -19,8 +19,8 @@ namespace IFoody.Application.Mapping
         {
             return new CartaoCreditoDto { 
                 IdCartao = cartao.IdCartao,
-                IdCliente = cartao.IdCliente,
-                NumeroMascarado = cartao.NumeroMascarado 
+                NumeroMascarado = cartao.NumeroMascarado,
+                Bandeira = cartao.Bandeira
             };
         }
     }

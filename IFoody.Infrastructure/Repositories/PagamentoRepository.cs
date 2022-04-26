@@ -19,7 +19,7 @@ namespace IFoody.Infrastructure.Repositories
 
         }
 
-        public void EnviarCobrancaFila(PedidoGeralDto pedido)
+        public void EnviarCobrancaFila(CobrancaDto cobranca)
         {
             var factory = new ConnectionFactory() { HostName = "localhost" };
             using (var connection = factory.CreateConnection())
@@ -32,7 +32,7 @@ namespace IFoody.Infrastructure.Repositories
                                      autoDelete: false,
                                      arguments: null);
 
-                string message = JsonSerializer.Serialize(pedido);
+                string message = JsonSerializer.Serialize(cobranca);
                 var body = Encoding.UTF8.GetBytes(message);
 
                 channel.BasicPublish(exchange: "",

@@ -11,7 +11,7 @@ namespace IFoody.Application.Models
         public Guid Id { get; set; }
         public string Nome { get; set; }
         public string Email { get; set; }
-
         public IEnumerable<CartaoCreditoDto> Cartoes { get; set; }
+        public string Token { get; set; }
     }
 }

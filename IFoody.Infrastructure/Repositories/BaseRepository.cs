@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace IFoody.Infrastructure.Repositories
 {
-   public class BaseRepository<T>
+   public class BaseRepository<Entity>
     {
         private readonly IRedisRepository _redisService;
         public BaseRepository(IRedisRepository redisService)
@@ -21,18 +21,32 @@ namespace IFoody.Infrastructure.Repositories
 
         const string CONNECTION_STRING = "Server=localhost,1433;Database=IFoody;User Id=sa;Password=1q2w3e4r@#$";
         
-        protected async Task<IEnumerable<T>> ListarAsync(string sqlCommand, object parms)
+        protected async Task<IEnumerable<Entity>> ListarAsync(string sqlCommand, object parms)
         {
             using(var conn = new SqlConnection(CONNECTION_STRING))
             {
+                return await conn.QueryAsync<Entity>(sqlCommand, parms);
+            }
+        }
+        protected async Task<IEnumerable<T>> ListarAsync<T>(string sqlCommand, object parms)
+        {
+            using (var conn = new SqlConnection(CONNECTION_STRING))
+            {
                 return await conn.QueryAsync<T>(sqlCommand, parms);
             }
-        }  
+        }
+        protected async Task<Entity> ObterAsync(string sqlCommand, object? parms)
+        {
+            using (var conn = new SqlConnection(CONNECTION_STRING))
+            {
+                return (await conn.QueryAsync<Entity>(sqlCommand,parms)).FirstOrDefault();
+            }
+        }
         protected async Task<T> ObterAsync<T>(string sqlCommand, object? parms)
         {
             using (var conn = new SqlConnection(CONNECTION_STRING))
             {
-                return (await conn.QueryAsync<T>(sqlCommand,parms)).FirstOrDefault();
+                return (await conn.QueryAsync<T>(sqlCommand, parms)).FirstOrDefault();
             }
         }
         protected async Task<int> ExecutarAsync(string sqlCommand, object? parms)
@@ -50,7 +64,7 @@ namespace IFoody.Infrastructure.Repositories
             }
         }
 
-        protected Task<T> ObterOuSalvarAsync<T>(string chave, Func<Task<T>> func, TimeSpan tempoExpiracao)
+        protected Task<Entity> ObterOuSalvarAsync<Entity>(string chave, Func<Task<Entity>> func, TimeSpan tempoExpiracao)
         {
             return _redisService.ObterOuSalvarAsync(chave, func, tempoExpiracao);
         }

@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace IFoody.Application.Models.Restaurantes
+namespace IFoody.Domain.Dtos
 {
     public class ClassificacaoDto
     {

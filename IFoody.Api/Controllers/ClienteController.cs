@@ -1,9 +1,11 @@
 ﻿using IFoody.Application.Interfaces;
 using IFoody.Application.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace IFoody.Api.Controllers
@@ -18,6 +20,7 @@ namespace IFoody.Api.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
         public async Task<IActionResult> CadastrarCliente([FromBody] ClienteInput clienteInput)
         {
             await _clienteService.CadastrarCliente(clienteInput);
@@ -25,19 +28,51 @@ namespace IFoody.Api.Controllers
         }
 
         [HttpPost]
-        [Route("autenticacao")]
-        public async Task<IActionResult> AutenticarCliente(string email, string senha)
+        [Route("login")]
+        [AllowAnonymous]
+        public async Task<IActionResult> AutenticarCliente([FromBody] AutenticacaoInput autenticacaoInput)
         {
-            var cliente = await _clienteService.AutenticarCliente(email,senha);
+            var cliente = await _clienteService.AutenticarCliente(autenticacaoInput.Email, autenticacaoInput.Senha);
             return Ok(cliente);
         }
 
         [HttpPost]
         [Route("cartao")]
-        public async Task<IActionResult> CadastrarCartao([FromBody]CartaoCreditoInput cartao)
+        [Authorize(Roles = "cliente")]
+        public async Task<IActionResult> CadastrarCartao([FromBody] CartaoCreditoInput cartaoInput)
         {
-            await _clienteService.CadastrarCartaoCliente(cartao);
-            return Ok("Cartao cadastrado com sucesso");
+            var cartao = await _clienteService.CadastrarCartaoCliente(cartaoInput);
+            return Ok(cartao);
+        }     
+        
+        [HttpGet]
+        [Route("cartao")]
+        [Authorize(Roles = "cliente")]
+        public async Task<IActionResult> ListarCartoes()
+        {
+            var cartoes = await _clienteService.ListarCartoesCliente();
+            return Ok(cartoes);
+        }    
+        [HttpPost]
+        [Route("endereco")]
+        [Authorize(Roles = "cliente")]
+        public async Task<IActionResult> CadastrarEndereco([FromBody] EnderecoInput endereco)
+        {
+            
+            var enderecoFormatado = await _clienteService.CadastrarEndereco(endereco);
+            
+            return Ok(enderecoFormatado);
         }
+
+        [HttpGet]
+        [Route("endereco")]
+        [Authorize(Roles = "cliente")]
+        public async Task<IActionResult> ListarEndereco()
+        {
+            var enderecos = await _clienteService.ListarEnderecosCliente();
+
+            return Ok(enderecos);
+        }
+
     }
 }

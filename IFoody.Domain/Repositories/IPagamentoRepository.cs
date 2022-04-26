@@ -8,7 +8,7 @@ namespace IFoody.Domain.Repositories
 {
     public interface IPagamentoRepository
     {
-        void EnviarCobrancaFila(PedidoGeralDto pedidos);
+        void EnviarCobrancaFila(CobrancaDto cobranca);
         Task<string> CadastrarUsuarioStripe(UsuarioStripeDto restaurante);
         Task<string> CadastrarCartaoStripe(CartaoStripeDto cartao);
     }

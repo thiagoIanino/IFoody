@@ -14,7 +14,7 @@ namespace IFoody.Domain.Repositories
         Task SendMessage(string message);
         Task SendNotificationAsync(string notification);
         Task EnviarPedidosRestaurante(List<Pedido> pedidos);
-        Task EnviarRespostaCliente(Guid idUsuario, RespostaCLienteDto respostaCliente);
-        //Task SendMessage(NotifyMessage message);
+        Task EnviarRespostaCliente(Guid idUsuario, PedidoProcessado? respostaCliente);
+
     }
 }

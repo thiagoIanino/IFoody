@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
+
 namespace IFoody.Application.Models.Restaurantes
 {
     public class RestauranteInput
@@ -12,5 +13,9 @@ namespace IFoody.Application.Models.Restaurantes
         public string CNPJ { get; set; }
         public string Email { get; set; }
         public string Senha { get; set; }
+        public double TempoMedioEntrega { get; set; }
+        public string SubDescricao { get; set; }
+        public string UrlLogo { get; set; }
+        
     }
 }

@@ -8,7 +8,7 @@ namespace IFoody.Domain.Repositories
 {
     public interface IClienteRepository
     {
-        Task<Cliente> AutenticarCliente(string email, string senha);
+        Task<Cliente> ObterClientePorEmailESenha(string email, string senha);
         Task GravarCliente(Cliente cliente);
         Task<Cliente> BuscarCliente(Guid id);
     }

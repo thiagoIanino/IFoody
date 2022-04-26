@@ -14,23 +14,37 @@ namespace IFoody.Application
     {
         private readonly IPratoRespository _pratoService;
         private readonly IDominioPratoService _dominioPratoService;
-        public PratoApplication(IPratoRespository pratoService, IDominioPratoService dominioPratoService)
+        private readonly IContextoRepository _contextoRepository;
+
+        public PratoApplication(IPratoRespository pratoService, IDominioPratoService dominioPratoService,
+            IContextoRepository contextoRepository)
         {
             _pratoService = pratoService;
             _dominioPratoService = dominioPratoService;
+            _contextoRepository = contextoRepository;
         }
 
         public async Task CadastrarPrato(PratoInput pratoInput)
         {
+            var idRestaurante = _contextoRepository.ObterIdUsuarioAutenticado();
             var prato = new Prato(
                 pratoInput.NomePrato,
                 pratoInput.Descricao,
                 pratoInput.UrlImagem,
                 pratoInput.Valor,
-                pratoInput.IdRestaurante);
+                idRestaurante,
+                pratoInput.Classificacao);
 
             _dominioPratoService.ValidarDadosCadastroPrato(prato);
             await _pratoService.GravarPrato(prato);
+
+        }
+
+        public async Task DeletarPrato(Guid idPrato)
+        {
+            if (idPrato == Guid.Empty)
+                throw new Exception("Identificador do prato vazio");
+            await _pratoService.DeletarPrato(idPrato);
 
         }
 
